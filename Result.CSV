@@ -1,0 +1,60 @@
+Player,Game,BuyIn,Payout
+John Doe,BlackJack,100,0
+Steven,BlackJack,100,0
+Ben,BlackJack,100,200
+Jason,BlackJack,100,0
+Daulton,BlackJack,100,100
+Asa,BlackJack,100,0
+Jessica,BlackJack,100,200
+Test,BlackJack,100,0
+Harvey,BlackJack,100,200
+John Doe,BlackJack,500,0
+Steven,BlackJack,250,500
+Ben,BlackJack,120,0
+Jason,BlackJack,300,600
+Daulton,BlackJack,600,0
+Asa,BlackJack,400,800
+Jessica,BlackJack,200,0
+Test,BlackJack,120,240
+Harvey,BlackJack,1000,0
+John Doe,BlackJack,1000,2000
+Steven,BlackJack,1000,0
+Ben,BlackJack,1000,1000
+Jason,BlackJack,1000,1500
+Daulton,BlackJack,1000,0
+Asa,BlackJack,1000,1000
+Jessica,BlackJack,1000,2000
+Test,BlackJack,1000,0
+Harvey,BlackJack,1000,1000
+John Doe,Slots,100,50
+Steven,Slots,100,0
+Ben,Slots,100,200
+Jason,Slots,100,0
+Daulton,Slots,100,0
+Asa,Slots,100,0
+Jessica,Slots,100,1000
+Test,Slots,100,25
+Harvey,Slots,100,175
+John Doe,Slots,100,0
+Steven,Slots,100,200
+Ben,Slots,100,0
+Jason,Slots,100,100
+Daulton,Slots,100,0
+Asa,Slots,100,0
+Jessica,Slots,100,0
+Test,Slots,100,0
+Harvey,Slots,100,0
+John Doe,Slots,100,0
+Steven,Slots,100,0
+Ben,Slots,100,10000
+Jason,Slots,100,300
+Daulton,Slots,100,500
+Asa,Slots,100,0
+Jessica,Slots,100,300
+Test,Slots,100,0
+Harvey,Slots,100,250
+Test,Slots,100,0
+Test,Slots,100,0
+Test,Slots,100,0
+Test,Slots,100,0
+Test,Slots,100,0
