@@ -3,7 +3,7 @@
 	<script>
     	//setting up card sudo-class 
 function Card(suitValue, faceValue){
-    var cardAssetPath = suitValue + faceValue + '.png';//some asset path ending with aggregate suit face .png
+    var cardAssetPath = suitValue + faceValue;//some asset path ending with aggregate suit face .png
     var cardFaceValue; 
     if (faceValue == 14){
         cardFaceValue = 11;
@@ -21,33 +21,43 @@ function Card(suitValue, faceValue){
             return cardFaceValue;
         }
     }
+    this.getPath = function(){
+        return cardAssetPath;
+    }    
     //going to need a set method
 }
 
 // hand class can be used to told cards and get the aggregate sum
-function Hand(){
+function Hand(comp){
     var cardsList = [];
+    var cardsSpriteList = [];
     //adds a card to the list of cards currently in the hand
-    this.addCard = function(cardToAdd, y){
+    this.addCard = function(cardToAdd){
         if(cardToAdd instanceof Card){
             cardsList.push(cardToAdd);
         }else{
             console.log('something went wrong attempted to add a non card to hand');
         }
-        /*tempSprite = game.add.sprite(450, 100, 'pic');
-        if(y > 400){
-            drawCardAnimate(325 + playerCardCount * 20, y, tempSprite);
-            playerCardCount += 1
+        if (comp){
+            cardsSpriteList.push(game.add.sprite(350 + cardsList.length * 60, 100, cardToAdd.getPath()));
         }else{
-            drawCardAnimate(475 - computerCardCount * 20, y, tempSprite);
-            computerCardCount += 1
-        }*/
+            cardsSpriteList.push(game.add.sprite(350 + cardsList.length * 60, window.innerHeight - 350, cardToAdd.getPath()));
+        }
+        cardsSpriteList[cardsSpriteList.length - 1].scale.setTo(.25, .25);
     }
     // returns the sum of the cards in the hand 
     this.getSum = function(){
         var sum = 0;
         cardsList.forEach(x => sum += x.getFaceValue());
         return sum;
+    }
+    
+    this.destroySprites = function(){
+        for(let i = 0; i < cardsSpriteList.length; i++){
+            console.log(cardsSpriteList);
+            cardsSpriteList[i].visible = false;
+            cardsSpriteList[i].destroy(true);
+        }
     }
 }
 
@@ -60,25 +70,23 @@ function Player(playerName, moneyAmount, playerHand){
     var myHand = playerHand; 
     
     // stand
-    this.stand = function(){
+    this.stay = function(){
         myTurn = false;
     }
     // double
     this.double = function(cardToAdd){
         this.betAdd(bet);
-        myHand.addCard(cardToAdd, 400);
+        myHand.addCard(cardToAdd);
         this.stand();
         myTurn = false;
     }
     //adds to player bet
     this.betAdd = function(amount){
-        console.log(amount, bank);
         if(bank >= amount){
             bank -= amount;
             bet += amount;
             // will need rendering
         }else{
-            console.log(bank);
             alert('You don\'t have the funds to bet that much.'); 
         }
     }
@@ -102,12 +110,18 @@ function Player(playerName, moneyAmount, playerHand){
     this.getBet = function(){
         return bet;
     }
+    this.getBank = function(){
+    	return bank;
+    }
     this.getTurn = function(){
         return myTurn;
     }
-    
+    this.addBank = function(increment){
+    	bank += increment;
+    }
     this.resetHand = function(){
-        myhand = new Hand();
+        myTurn = true;
+        myHand = new Hand(false);
     }
 }
 
@@ -137,7 +151,6 @@ function Deck(){
     
     this.getNext = function(){
         if(cardList.length > 0){
-            console.log(cardList, cardList[0],  cardList.pop());
             return cardList.pop();
         } else{
             this.makeDeck();
@@ -165,7 +178,58 @@ function preload(){
     game.load.image('double', '{!URLFOR($Resource.Game_Res,'card_game_res/double.png')}');
     game.load.image('deal', '{!URLFOR($Resource.Game_Res,'card_game_res/suits.png')}');
     game.load.image('textbox', '{!URLFOR($Resource.Game_Res,'card_game_res/textbox.png')}');
-
+    game.load.image('c2', '{!URLFOR($Resource.Game_Res,'card_game_res/c2.png')}');
+    game.load.image('c3', '{!URLFOR($Resource.Game_Res,'card_game_res/c3.png')}');
+    game.load.image('c4', '{!URLFOR($Resource.Game_Res,'card_game_res/c4.png')}');
+    game.load.image('c5', '{!URLFOR($Resource.Game_Res,'card_game_res/c5.png')}');
+    game.load.image('c6', '{!URLFOR($Resource.Game_Res,'card_game_res/c6.png')}');
+    game.load.image('c7', '{!URLFOR($Resource.Game_Res,'card_game_res/c7.png')}');
+    game.load.image('c8', '{!URLFOR($Resource.Game_Res,'card_game_res/c8.png')}');
+    game.load.image('c9', '{!URLFOR($Resource.Game_Res,'card_game_res/c9.png')}');
+    game.load.image('c10', '{!URLFOR($Resource.Game_Res,'card_game_res/c10.png')}');
+    game.load.image('c11', '{!URLFOR($Resource.Game_Res,'card_game_res/c11.png')}');
+    game.load.image('c12', '{!URLFOR($Resource.Game_Res,'card_game_res/c12.png')}');
+    game.load.image('c13', '{!URLFOR($Resource.Game_Res,'card_game_res/c13.png')}');
+    game.load.image('c14', '{!URLFOR($Resource.Game_Res,'card_game_res/c14.png')}');
+    game.load.image('d2', '{!URLFOR($Resource.Game_Res,'card_game_res/d2.png')}');
+    game.load.image('d3', '{!URLFOR($Resource.Game_Res,'card_game_res/d3.png')}');
+    game.load.image('d4', '{!URLFOR($Resource.Game_Res,'card_game_res/d4.png')}');
+    game.load.image('d5', '{!URLFOR($Resource.Game_Res,'card_game_res/d5.png')}');
+    game.load.image('d6', '{!URLFOR($Resource.Game_Res,'card_game_res/d6.png')}');
+    game.load.image('d7', '{!URLFOR($Resource.Game_Res,'card_game_res/d7.png')}');
+    game.load.image('d8', '{!URLFOR($Resource.Game_Res,'card_game_res/d8.png')}');
+    game.load.image('d9', '{!URLFOR($Resource.Game_Res,'card_game_res/d9.png')}');
+    game.load.image('d10', '{!URLFOR($Resource.Game_Res,'card_game_res/d10.png')}');
+    game.load.image('d11', '{!URLFOR($Resource.Game_Res,'card_game_res/d11.png')}');
+    game.load.image('d12', '{!URLFOR($Resource.Game_Res,'card_game_res/d12.png')}');
+    game.load.image('d13', '{!URLFOR($Resource.Game_Res,'card_game_res/d13.png')}');
+    game.load.image('d14', '{!URLFOR($Resource.Game_Res,'card_game_res/d14.png')}');
+	game.load.image('h2', '{!URLFOR($Resource.Game_Res,'card_game_res/h2.png')}');
+    game.load.image('h3', '{!URLFOR($Resource.Game_Res,'card_game_res/h3.png')}');
+    game.load.image('h4', '{!URLFOR($Resource.Game_Res,'card_game_res/h4.png')}');
+    game.load.image('h5', '{!URLFOR($Resource.Game_Res,'card_game_res/h5.png')}');
+    game.load.image('h6', '{!URLFOR($Resource.Game_Res,'card_game_res/h6.png')}');
+    game.load.image('h7', '{!URLFOR($Resource.Game_Res,'card_game_res/h7.png')}');
+    game.load.image('h8', '{!URLFOR($Resource.Game_Res,'card_game_res/h8.png')}');
+    game.load.image('h9', '{!URLFOR($Resource.Game_Res,'card_game_res/h9.png')}');
+    game.load.image('h10', '{!URLFOR($Resource.Game_Res,'card_game_res/h10.png')}');
+    game.load.image('h11', '{!URLFOR($Resource.Game_Res,'card_game_res/h11.png')}');
+    game.load.image('h12', '{!URLFOR($Resource.Game_Res,'card_game_res/h12.png')}');
+    game.load.image('h13', '{!URLFOR($Resource.Game_Res,'card_game_res/h13.png')}');
+    game.load.image('h14', '{!URLFOR($Resource.Game_Res,'card_game_res/h14.png')}');
+    game.load.image('s2', '{!URLFOR($Resource.Game_Res,'card_game_res/s2.png')}');
+    game.load.image('s3', '{!URLFOR($Resource.Game_Res,'card_game_res/s3.png')}');
+    game.load.image('s4', '{!URLFOR($Resource.Game_Res,'card_game_res/s4.png')}');
+    game.load.image('s5', '{!URLFOR($Resource.Game_Res,'card_game_res/s5.png')}');
+    game.load.image('s6', '{!URLFOR($Resource.Game_Res,'card_game_res/s6.png')}');
+    game.load.image('s7', '{!URLFOR($Resource.Game_Res,'card_game_res/s7.png')}');
+    game.load.image('s8', '{!URLFOR($Resource.Game_Res,'card_game_res/s8.png')}');
+    game.load.image('s9', '{!URLFOR($Resource.Game_Res,'card_game_res/s9.png')}');
+    game.load.image('s10', '{!URLFOR($Resource.Game_Res,'card_game_res/s10.png')}');
+    game.load.image('s11', '{!URLFOR($Resource.Game_Res,'card_game_res/s11.png')}');
+    game.load.image('s12', '{!URLFOR($Resource.Game_Res,'card_game_res/s12.png')}');
+    game.load.image('s13', '{!URLFOR($Resource.Game_Res,'card_game_res/s13.png')}');
+    game.load.image('s14', '{!URLFOR($Resource.Game_Res,'card_game_res/s14.png')}');
     
 }
 
@@ -173,37 +237,12 @@ function preload(){
 function create() {
     
     // creating objects from js classes for data
-    gameDeck = new Deck();
-    gameDeck.makeDeck();
-    gameDeck.shuffleDeck();
-    playerHand = new Hand();
-    computerHand = new Hand();
+    playerHand = new Hand(false);
+    computerHand = new Hand(true);
     humanPlayer = new Player('Dos', 500, playerHand);
     game.physics.startSystem(Phaser.Physics.ARCADE);
-
-    bettingPhase = true;
     game.stage.backgroundColor = '#477148';
-    counter = 0;
-    playerCardCount = 0;
-    computerCardCount = 0;
 
-    //function wrapping game reset logic for reuse 
-    resetGame = function(){
-        humanPlayer.subtractBet(humanPlayer.getBet());
-        pBetText.setText('Your Bet: ' + humanPlayer.getBet());
-        pHandText.visible = false;
-        pHandValueSprite.visible = false;
-        dealBtn.visible = true;
-        dealText.visible = true;
-        gameDeck.makeDeck();
-        gameDeck.shuffleDeck();
-        bettingPhase = true;
-        humanPlayer.resetHand();
-        computerHand = new Hand();
-        pHandText.setText('');
-        computerCardCount = 0;
-        playerCardCount = 0;
-    }
 
     var graphics = game.add.graphics(100, 100);
     
@@ -228,6 +267,8 @@ function create() {
     pBetSprite.scale.setTo(.17, .15);
     pHandValueSprite = game.add.sprite(window.innerWidth / 2 + 65, window.innerHeight - 420, 'textbox');
     pHandValueSprite.scale.setTo(.19, .15);
+    pBankValueSprite = game.add.sprite(50, window.innerHeight - 350, 'textbox');
+    pBankValueSprite.scale.setTo(.19, .15);
     /*
     testingSprite = game.add.sprite(450, 100, 'pic');
     game.physics.arcade.enable(testingSprite);
@@ -245,21 +286,43 @@ function create() {
     dealText = game.add.text(Math.floor(dealBtn.x), Math.floor(dealBtn.y + dealBtn.height / 3.7), "Deal!", style);
     pBetText = game.add.text(Math.floor(pBetSprite.x + pBetSprite.width / 6), Math.floor(pBetSprite.y + pBetSprite.height / 1.9), 'Your Bet: ' + humanPlayer.getBet() , style);
     pHandText = game.add.text(Math.floor(pHandValueSprite.x + pHandValueSprite.width / 6), Math.floor(pHandValueSprite.y + pHandValueSprite.height / 1.9), "", style);
-
-    //text and sprites that need to be invisble setup
-    pHandText.visible = false;
-    pHandValueSprite.visible = false;
+    pBankText = game.add.text(Math.floor(pBankValueSprite.x + pBankValueSprite.width / 6), Math.floor(pBankValueSprite.y + pBankValueSprite.height / 1.9), 'Your Bank: ' + humanPlayer.getBet(), style);
 
     //initialze input actions for buttons 
     tfChipBtn.onInputUp.add(() => {humanPlayer.betAdd(25);}, this);
     ftyChipBtn.onInputUp.add(() => {humanPlayer.betAdd(50);}, this);
     hndChipBtn.onInputUp.add(() => {humanPlayer.betAdd(100);}, this);
     thndChipBtn.onInputUp.add(() => {humanPlayer.betAdd(200);}, this);
-                                   hitBtn.onInputUp.add(()=>{humanPlayer.getHand().addCard(gameDeck.getNext(), 400); /*game.physics.arcade.moveToXY(testingSprite, 200, 500, 0, 1000);*/}, this);
+                                   hitBtn.onInputUp.add(()=>{humanPlayer.getHand().addCard(gameDeck.getNext()); /*game.physics.arcade.moveToXY(testingSprite, 200, 500, 0, 1000);*/}, this);
     doubleBtn.onInputUp.add(()=>{humanPlayer.double(gameDeck.getNext());}, this);
     stayBtn.onInputUp.add(()=>{humanPlayer.stay()}, this);
     dealBtn.onInputUp.add(()=>{bettingPhase = false; dealBtn.visible = false; dealText.visible = false; pHandValueSprite.visible = true; pHandText.visible = true;}, this);
     
+    //function wrapping game reset logic for reuse 
+    resetGame = function(){
+        humanPlayer.subtractBet(humanPlayer.getBet());
+        pBetText.setText('Your Bet: ' + humanPlayer.getBet());
+        pBankText.setText('Your Bank: ' + humanPlayer.getBank());
+        pHandText.visible = false;
+        pHandValueSprite.visible = false;
+        dealBtn.visible = true;
+        dealText.visible = true;
+        gameDeck = new Deck();
+    	gameDeck.makeDeck();
+    	gameDeck.shuffleDeck();
+        bettingPhase = true;
+        humanPlayer.getHand().destroySprites();
+        humanPlayer.resetHand();
+        computerHand.destroySprites();
+        computerHand = new Hand(true);
+        pHandText.setText('');
+        computerCardCount = 0;
+        playerCardCount = 0;
+        counter = 0;
+        console.log(humanPlayer.getHand().getSum());
+    }
+    resetGame();                               
+                                   
     window.graphics = graphics;
     
 }
@@ -268,7 +331,8 @@ function create() {
 function update(){
     //preebetting actions
     if(bettingPhase){
-        pBetText.setText('Your Bet: ' + humanPlayer.getBet())
+        pBetText.setText('Your Bet: ' + humanPlayer.getBet());
+        pBankText.setText('Your Bank: ' + humanPlayer.getBank());                           
         hitBtn.isEnabled = false;
         doubleBtn.isEnabled = false;
         stayBtn.isEnabled = false;
@@ -281,10 +345,10 @@ function update(){
             hitBtn.isEnabled = true;
             doubleBtn.isEnabled = true;
             stayBtn.isEnabled = true;
-            humanPlayer.getHand().addCard(gameDeck.getNext(), 400);
-            computerHand.addCard(gameDeck.getNext(), 200);
-            humanPlayer.getHand().addCard(gameDeck.getNext(), 400);
-            computerHand.addCard(gameDeck.getNext(), 200);
+            humanPlayer.getHand().addCard(gameDeck.getNext());
+            computerHand.addCard(gameDeck.getNext());
+            humanPlayer.getHand().addCard(gameDeck.getNext());
+            computerHand.addCard(gameDeck.getNext());
             counter = 1;
         }
         if (humanPlayer.getHand().getSum() > 21){ // bust logic
@@ -293,6 +357,25 @@ function update(){
             resetGame();
         }
         pHandText.setText('Hand Value: ' + humanPlayer.getHand().getSum());
+    }else{
+        console.log('moved to next if');
+        if (computerHand.getSum() > 21){
+            alert('Congrats you won '  + humanPlayer.getBet());
+            humanPlayer.addBank(humanPlayer.getBet() * 2);
+            pBankText.setText('Your Bank: ' + humanPlayer.getBank());                       
+            resetGame();
+        }else if (computerHand.getSum() < 17){    
+            computerHand.addCard(gameDeck.getNext());                      
+            game.time.events.add(Phaser.Timer.SECOND, ()=>{computerHand.getSum();}, this);
+        }else if(computerHand.getSum() > humanPlayer.getHand().getSum() && computerHand.getSum() < 22){
+        	alert('Sorry you lose' + humanPlayer.getBet());
+            resetGame();
+        }else if (computerHand.getSum() < humanPlayer.getHand().getSum() && computerHand.getSum() < 22){
+        	alert('Congrats you won '  + humanPlayer.getBet());
+            humanPlayer.addBank(humanPlayer.getBet());
+            pBankText.setText('Your Bank: ' + humanPlayer.getBank());                       
+            resetGame();
+        }
     }
 }
 
