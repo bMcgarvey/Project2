@@ -38,11 +38,13 @@ function Hand(comp){
         }else{
             console.log('something went wrong attempted to add a non card to hand');
         }
-        if (comp){
+        if(comp && cardsList.length == 2){
+        	cardsSpriteList.push(game.add.sprite(360 + cardsList.length * 40, 42, 'cardback'));
+        }else if (comp){
             cardsSpriteList.push(game.add.sprite(350 + cardsList.length * 60, 100, cardToAdd.getPath()));
         }else{
             cardsSpriteList.push(game.add.sprite(350 + cardsList.length * 60, window.innerHeight - 350, cardToAdd.getPath()));
-        }
+        } 
         cardsSpriteList[cardsSpriteList.length - 1].scale.setTo(.25, .25);
     }
     // returns the sum of the cards in the hand 
@@ -50,6 +52,12 @@ function Hand(comp){
         var sum = 0;
         cardsList.forEach(x => sum += x.getFaceValue());
         return sum;
+    }
+    
+    this.flipCard = function(){
+        cardsSpriteList[1].loadTexture(cardsList[1].getPath());
+        cardsSpriteList[1].y = 100;
+        cardsSpriteList[1].x = 350 + cardsList.length * 60;	
     }
     
     this.destroySprites = function(){
@@ -72,6 +80,7 @@ function Player(playerName, moneyAmount, playerHand){
     // stand
     this.stay = function(){
         myTurn = false;
+        
     }
     // double
     this.double = function(cardToAdd){
@@ -230,6 +239,7 @@ function preload(){
     game.load.image('s12', '{!URLFOR($Resource.Game_Res,'card_game_res/s12.png')}');
     game.load.image('s13', '{!URLFOR($Resource.Game_Res,'card_game_res/s13.png')}');
     game.load.image('s14', '{!URLFOR($Resource.Game_Res,'card_game_res/s14.png')}');
+    game.load.image('cardback', '{!URLFOR($Resource.Game_Res,'card_game_res/cardback.png')}');
     
 }
 
@@ -294,8 +304,8 @@ function create() {
     hndChipBtn.onInputUp.add(() => {humanPlayer.betAdd(100);}, this);
     thndChipBtn.onInputUp.add(() => {humanPlayer.betAdd(200);}, this);
                                    hitBtn.onInputUp.add(()=>{humanPlayer.getHand().addCard(gameDeck.getNext()); /*game.physics.arcade.moveToXY(testingSprite, 200, 500, 0, 1000);*/}, this);
-    doubleBtn.onInputUp.add(()=>{humanPlayer.double(gameDeck.getNext());}, this);
-    stayBtn.onInputUp.add(()=>{humanPlayer.stay()}, this);
+    doubleBtn.onInputUp.add(()=>{humanPlayer.double(gameDeck.getNext()); computerHand.flipCard();}, this);
+    stayBtn.onInputUp.add(()=>{humanPlayer.stay(); computerHand.flipCard();}, this);
     dealBtn.onInputUp.add(()=>{bettingPhase = false; dealBtn.visible = false; dealText.visible = false; pHandValueSprite.visible = true; pHandText.visible = true;}, this);
     
     //function wrapping game reset logic for reuse 
@@ -351,6 +361,7 @@ function update(){
             computerHand.addCard(gameDeck.getNext());
             counter = 1;
         }
+        
         if (humanPlayer.getHand().getSum() > 21){ // bust logic
             pHandText.setText('Hand Value: ' + humanPlayer.getHand().getSum());
             alert('Bad luck you went over');
@@ -358,7 +369,7 @@ function update(){
         }
         pHandText.setText('Hand Value: ' + humanPlayer.getHand().getSum());
     }else{
-        console.log('moved to next if');
+        computerHand.flipCard();
         if (computerHand.getSum() > 21){
             alert('Congrats you won '  + humanPlayer.getBet());
             humanPlayer.addBank(humanPlayer.getBet() * 2);
@@ -367,9 +378,10 @@ function update(){
         }else if (computerHand.getSum() < 17){    
             computerHand.addCard(gameDeck.getNext());                      
             game.time.events.add(Phaser.Timer.SECOND, ()=>{computerHand.getSum();}, this);
-        }else if(computerHand.getSum() > humanPlayer.getHand().getSum() && computerHand.getSum() < 22){
-        	alert('Sorry you lose' + humanPlayer.getBet());
-            resetGame();
+        }else if(computerHand.getSum() >= humanPlayer.getHand().getSum() && computerHand.getSum() < 22){
+            computerHand.flipCard();
+            game.time.events.add(Phaser.Timer.SECOND, ()=>{alert('Sorry you lose' + humanPlayer.getBet()); resetGame();}, this)
+            
         }else if (computerHand.getSum() < humanPlayer.getHand().getSum() && computerHand.getSum() < 22){
         	alert('Congrats you won '  + humanPlayer.getBet());
             humanPlayer.addBank(humanPlayer.getBet());
