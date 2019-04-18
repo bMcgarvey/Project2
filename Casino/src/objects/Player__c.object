@@ -52,16 +52,63 @@
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
-        <fullName>Balance__c</fullName>
-        <defaultValue>0</defaultValue>
+
+        <fullName>DepositTotal__c</fullName>
         <externalId>false</externalId>
-        <label>Balance</label>
+        <label>DepositTotal</label>
+        <summarizedField>Transaction__c.Amount__c</summarizedField>
+        <summaryFilterItems>
+            <field>Transaction__c.Transaction_Type__c</field>
+            <operation>equals</operation>
+            <value>Deposit</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Transaction__c.Player__c</summaryForeignKey>
+        <summaryOperation>sum</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>GameIncome__c</fullName>
+        <externalId>false</externalId>
+        <label>GameIncome</label>
+        <summarizedField>Result__c.Gain_Loss__c</summarizedField>
+        <summaryForeignKey>Result__c.Player__c</summaryForeignKey>
+        <summaryOperation>sum</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Income__c</fullName>
+        <externalId>false</externalId>
+        <formula>GameIncome__c + DepositTotal__c - WithdrawalTotal__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Income</label>
         <precision>18</precision>
-        <required>true</required>
+        <required>false</required>
+
         <scale>2</scale>
         <trackHistory>false</trackHistory>
         <trackTrending>false</trackTrending>
         <type>Currency</type>
+    </fields>
+
+    <fields>
+        <fullName>WithdrawalTotal__c</fullName>
+        <externalId>false</externalId>
+        <label>WithdrawalTotal</label>
+        <summarizedField>Transaction__c.Amount__c</summarizedField>
+        <summaryFilterItems>
+            <field>Transaction__c.Transaction_Type__c</field>
+            <operation>equals</operation>
+            <value>Withdrawal</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Transaction__c.Player__c</summaryForeignKey>
+        <summaryOperation>sum</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
     </fields>
     <label>Player</label>
     <listViews>
