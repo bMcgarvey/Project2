@@ -132,5 +132,5 @@
     </nameField>
     <pluralLabel>Players</pluralLabel>
     <searchLayouts/>
-    <sharingModel>ReadWrite</sharingModel>
+    <sharingModel>Read</sharingModel>
 </CustomObject>
