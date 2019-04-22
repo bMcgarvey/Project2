@@ -1,6 +1,51 @@
 <apex:component >
     <apex:includeScript value="{!$Resource.Phaser}"/>
+    <script src="../../soap/ajax/45.0/connection.js" type="text/javascript"/>
 	<script>
+        var sessionId = sforce.connection.sessionId='{!GETSESSIONID()}';
+    	var currentGame = sforce.connection.query("SELECT Id FROM Game__c WHERE Name = 'BlackJack' LIMIT 1")['records']['Id'];
+		var currentPlayer = sforce.connection.query("SELECT Id FROM Player__c WHERE OwnerId = '{!$User.Id}' LIMIT 1")['records']['Id'];
+    
+		function insertResult(betAmount, winAmount){
+    		var result = new sforce.SObject('Result__c');
+            result.Game__c = currentGame;
+    		result.Player__c = currentPlayer;
+    		result.Buy_In__c = betAmount;
+    		result.Payout__c = winAmount;
+    		var returnVal = sforce.connection.create([result]);
+			if(returnVal[0].getBoolean('success')) {
+				console.log('New Account is created with id' + returnVal[0].id);
+			}else{
+				console.log('failed to create new Account' + returnVal[0]);
+			}
+		}
+    
+    	function returnPlayerBalance(){
+        	try{
+            	var balance = sforce.connection.query("SELECT Balance__c FROM player__c WHERE OwnerId = '{!$User.Id}' LIMIT 1")['records']['Balance__c'];
+            	console.log(balance);
+                return balance;
+            }catch(err){
+            	console.log('exception occured: ' + err.message);
+            }
+        }
+    
+    	function setPlayerBalance(newBalance){
+        	try{
+            	var balance = sforce.connection.query("SELECT Balance__c FROM player__c WHERE OwnerId = '{!$User.Id}' LIMIT 1")['records']['Balance__c'];
+                balance['records'] = newBalance;
+                var returnVal = sforce.connection.update([balance]);
+				if(returnVal[0].getBoolean('success')) {
+					console.log('New Account is created with id' + returnVal[0].id);
+				}else{
+					console.log('failed to create new Account' + returnVal[0]);
+				}
+            }catch(err){
+            	console.log('exception occured: ' + err.message);
+            }
+        }
+    
+    
     	//setting up card sudo-class 
 function Card(suitValue, faceValue){
     var cardAssetPath = suitValue + faceValue;//some asset path ending with aggregate suit face .png
@@ -57,12 +102,11 @@ function Hand(comp){
     this.flipCard = function(){
         cardsSpriteList[1].loadTexture(cardsList[1].getPath());
         cardsSpriteList[1].y = 100;
-        cardsSpriteList[1].x = 350 + cardsList.length * 60;	
+        cardsSpriteList[1].x = 350 + 120;	
     }
     
     this.destroySprites = function(){
         for(let i = 0; i < cardsSpriteList.length; i++){
-            console.log(cardsSpriteList);
             cardsSpriteList[i].visible = false;
             cardsSpriteList[i].destroy(true);
         }
@@ -80,16 +124,8 @@ function Player(playerName, moneyAmount, playerHand){
     // stand
     this.stay = function(){
         myTurn = false;
-        
     }
-    // double
-    this.double = function(cardToAdd){
-        this.betAdd(bet);
-        myHand.addCard(cardToAdd);
-        this.stand();
-        myTurn = false;
-    }
-    //adds to player bet
+        //adds to player bet
     this.betAdd = function(amount){
         if(bank >= amount){
             bank -= amount;
@@ -99,19 +135,12 @@ function Player(playerName, moneyAmount, playerHand){
             alert('You don\'t have the funds to bet that much.'); 
         }
     }
-    this.subtractBet = function(amount){
-        if(bet >= amount){
-            bet -= amount;
-            bank += amount;
-            //will need rendering
-        }else if(bet > 0 && bet < amount){
-            bank += bet;
-            bet = 0;
-            //will need rendering
-        }
-        else{
-            alert('Your bet is already 0 it cant go lower');
-        }
+    // double
+    this.double = function(cardToAdd){
+        this.betAdd(bet);
+        myHand.addCard(cardToAdd);
+        this.stand();
+        myTurn = false;
     }
     this.getHand = function(){
         return myHand;
@@ -122,16 +151,17 @@ function Player(playerName, moneyAmount, playerHand){
     this.getBank = function(){
     	return bank;
     }
+    this.setBank = function(){
+    	bank = returnPlayerBalance();
+    }
     this.getTurn = function(){
         return myTurn;
-    }
-    this.addBank = function(increment){
-    	bank += increment;
     }
     this.resetHand = function(){
         myTurn = true;
         myHand = new Hand(false);
     }
+    
 }
 
 //deck class used to create shuffle and deal cards 
@@ -172,6 +202,7 @@ function Deck(){
         cardlist = [];
     }
 }
+
 
 //defining phaser game obj 
 var game = new Phaser.Game(1152, 648, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
@@ -249,10 +280,9 @@ function create() {
     // creating objects from js classes for data
     playerHand = new Hand(false);
     computerHand = new Hand(true);
-    humanPlayer = new Player('Dos', 500, playerHand);
+    humanPlayer = new Player('Dos', returnPlayerBalance(), playerHand);
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.stage.backgroundColor = '#477148';
-
 
     var graphics = game.add.graphics(100, 100);
     
@@ -277,15 +307,15 @@ function create() {
     pBetSprite.scale.setTo(.17, .15);
     pHandValueSprite = game.add.sprite(window.innerWidth / 2 + 65, window.innerHeight - 420, 'textbox');
     pHandValueSprite.scale.setTo(.19, .15);
-    pBankValueSprite = game.add.sprite(50, window.innerHeight - 350, 'textbox');
-    pBankValueSprite.scale.setTo(.19, .15);
+    pBankValueSprite = game.add.sprite(0, window.innerHeight - 350, 'textbox');
+    pBankValueSprite.scale.setTo(.27, .15);
     /*
     testingSprite = game.add.sprite(450, 100, 'pic');
     game.physics.arcade.enable(testingSprite);
 	*/
     
     //setup text styling and text elements 
-    var style = { font: "32px Arial",  wordWrap: true, wordWrapWidth: 230, align: "center", fill: "white"};
+    var style = { font: "32px Arial",  wordWrap: true, wordWrapWidth: 300, align: "center", fill: "white"};
     hitText = game.add.text(Math.floor(hitBtn.x + hitBtn.width / 4), Math.floor(hitBtn.y + hitBtn.height / 2.5), "Hit", style);
     stayText = game.add.text(Math.floor(stayBtn.x + stayBtn.width / 8), Math.floor(stayBtn.y + stayBtn.height / 2.5), "Stay", style);
     doubleText = game.add.text(Math.floor(doubleBtn.x - 10), Math.floor(doubleBtn.y + doubleBtn.height / 2.5), "Double", style);
@@ -310,7 +340,7 @@ function create() {
     
     //function wrapping game reset logic for reuse 
     resetGame = function(){
-        humanPlayer.subtractBet(humanPlayer.getBet());
+        humanPlayer.setBank();
         pBetText.setText('Your Bet: ' + humanPlayer.getBet());
         pBankText.setText('Your Bank: ' + humanPlayer.getBank());
         pHandText.visible = false;
@@ -329,7 +359,6 @@ function create() {
         computerCardCount = 0;
         playerCardCount = 0;
         counter = 0;
-        console.log(humanPlayer.getHand().getSum());
         outcomeTracker = 0;
     }
     resetGame();                               
@@ -366,15 +395,15 @@ function update(){
         if (humanPlayer.getHand().getSum() > 21){ // bust logic
             pHandText.setText('Hand Value: ' + humanPlayer.getHand().getSum());
             alert('Bad luck you went over');
+            insertResult(humanPlayer.getBet(), humanPlayer.getBet())
             resetGame();
         }
         pHandText.setText('Hand Value: ' + humanPlayer.getHand().getSum());
     }else{
         computerHand.flipCard();
-        if (computerHand.getSum() > 21 && outcomeTracker == 0){
-            game.time.events.add(Phaser.Timer.SECOND, ()=>{alert('Congrats you won '  + humanPlayer.getBet());
-            humanPlayer.addBank(humanPlayer.getBet() * 2);
-            pBankText.setText('Your Bank: ' + humanPlayer.getBank());                       
+        if (computerHand.getSum() > 21 && outcomeTracker == 0){;
+            insertResult(humanPlayer.getBet(), humanPlayer.getBet()),
+            game.time.events.add(Phaser.Timer.SECOND, ()=>{alert('Congrats you won '  + humanPlayer.getBet()),                       
             resetGame();}, this)
             outcomeTracker += 1;
         }else if (computerHand.getSum() < 17){
@@ -382,15 +411,16 @@ function update(){
             computerHand.addCard(gameDeck.getNext());                      
             game.time.events.add(Phaser.Timer.SECOND, ()=>{computerHand.getSum();}, this);
         }else if(computerHand.getSum() >= humanPlayer.getHand().getSum() && computerHand.getSum() < 22 && outcomeTracker == 0){
+            insertResult(humanPlayer.getBet(), humanPlayer.getBet())
             computerHand.flipCard();
             game.time.events.add(Phaser.Timer.SECOND, ()=>{alert('Sorry you lose' + humanPlayer.getBet()); resetGame();}, this)
             outcomeTracker += 1;
         }else if (computerHand.getSum() < humanPlayer.getHand().getSum() && computerHand.getSum() < 22 && outcomeTracker == 0){
             computerHand.flipCard();
-            game.time.events.add(Phaser.Timer.SECOND, ()=>{alert('Congrats you won '  + humanPlayer.getBet());
-            humanPlayer.addBank(humanPlayer.getBet());
-            pBankText.setText('Your Bank: ' + humanPlayer.getBank());                       
-            resetGame();}, this)
+            game.time.events.add(Phaser.Timer.SECOND, ()=>{if(confirm('Congrats you won '  + humanPlayer.getBet())){
+            insertResult(humanPlayer.getBet(), humanPlayer.getBet())                     
+            resetGame();}}, this)
+                                
             outcomeTracker += 1;
         }
     }
