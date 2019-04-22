@@ -45,7 +45,6 @@
             }
         }
     
-    	console.log(returnPlayerBalance);
     
     	//setting up card sudo-class 
 function Card(suitValue, faceValue){
@@ -103,12 +102,11 @@ function Hand(comp){
     this.flipCard = function(){
         cardsSpriteList[1].loadTexture(cardsList[1].getPath());
         cardsSpriteList[1].y = 100;
-        cardsSpriteList[1].x = 350 + cardsList.length * 60;	
+        cardsSpriteList[1].x = 350 + 120;	
     }
     
     this.destroySprites = function(){
         for(let i = 0; i < cardsSpriteList.length; i++){
-            console.log(cardsSpriteList);
             cardsSpriteList[i].visible = false;
             cardsSpriteList[i].destroy(true);
         }
@@ -285,7 +283,6 @@ function create() {
     humanPlayer = new Player('Dos', returnPlayerBalance(), playerHand);
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.stage.backgroundColor = '#477148';
-	console.log(humanPlayer.getBank());
 
     var graphics = game.add.graphics(100, 100);
     
@@ -362,7 +359,6 @@ function create() {
         computerCardCount = 0;
         playerCardCount = 0;
         counter = 0;
-        console.log(humanPlayer.getHand().getSum());
         outcomeTracker = 0;
     }
     resetGame();                               
@@ -421,9 +417,10 @@ function update(){
             outcomeTracker += 1;
         }else if (computerHand.getSum() < humanPlayer.getHand().getSum() && computerHand.getSum() < 22 && outcomeTracker == 0){
             computerHand.flipCard();
-            game.time.events.add(Phaser.Timer.SECOND, ()=>{alert('Congrats you won '  + humanPlayer.getBet());
+            game.time.events.add(Phaser.Timer.SECOND, ()=>{if(confirm('Congrats you won '  + humanPlayer.getBet())){
             insertResult(humanPlayer.getBet(), humanPlayer.getBet())                     
-            resetGame();}, this)
+            resetGame();}}, this)
+                                
             outcomeTracker += 1;
         }
     }
