@@ -28,5 +28,19 @@
         <members>*</members>
         <name>ApexPage</name>
     </types>
+    <types>
+        <members>Public</members>
+        <members>Public/GkJREfumuTNcNZZMPtnTAosqfbXkWc</members>
+        <members>Public/HwJFJAOEeCrHgmNSlvISUDeeMmeVfk</members>
+        <name>Dashboard</name>
+    </types>
+    <types>
+        <members>unfiled$public/Games_zCV</members>
+        <members>unfiled$public/Players_23Z</members>
+        <members>unfiled$public/Player_with_results_UZa</members>
+        <members>unfiled$public</members>
+        <members>unfiled$public/Players_with_results_and_games_DH7</members>
+        <name>Report</name>
+    </types>
     <version>38.0</version>
 </Package>

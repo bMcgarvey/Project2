@@ -51,9 +51,40 @@
     <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Description</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Games_Played__c</fullName>
+        <externalId>false</externalId>
+        <label>Games Played</label>
+        <summaryForeignKey>Result__c.Game__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Profit_Loss__c</fullName>
+        <externalId>false</externalId>
+        <label>Profit/Loss</label>
+        <summarizedField>Result__c.Gain_Loss__c</summarizedField>
+        <summaryForeignKey>Result__c.Game__c</summaryForeignKey>
+        <summaryOperation>sum</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
     <label>Game</label>
     <listViews>
         <fullName>All</fullName>
+        <columns>NAME</columns>
+        <columns>Games_Played__c</columns>
+        <columns>Profit_Loss__c</columns>
         <filterScope>Everything</filterScope>
         <label>All</label>
     </listViews>
