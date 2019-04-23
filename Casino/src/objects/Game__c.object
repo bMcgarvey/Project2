@@ -94,5 +94,5 @@
     </nameField>
     <pluralLabel>Games</pluralLabel>
     <searchLayouts/>
-    <sharingModel>ReadWrite</sharingModel>
+    <sharingModel>Read</sharingModel>
 </CustomObject>
