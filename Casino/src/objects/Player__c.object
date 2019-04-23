@@ -53,12 +53,11 @@
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
         <fullName>Balance__c</fullName>
+        <defaultValue>0</defaultValue>
         <externalId>false</externalId>
-        <formula>GameIncome__c + DepositTotal__c - WithdrawalTotal__c</formula>
-        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
         <label>Balance</label>
         <precision>18</precision>
-        <required>false</required>
+        <required>true</required>
         <scale>2</scale>
         <trackHistory>false</trackHistory>
         <trackTrending>false</trackTrending>
@@ -92,14 +91,17 @@
         <type>Summary</type>
     </fields>
     <fields>
-        <fullName>Games_Played__c</fullName>
+        <fullName>Income__c</fullName>
         <externalId>false</externalId>
-        <label>Games Played</label>
-        <summaryForeignKey>Result__c.Player__c</summaryForeignKey>
-        <summaryOperation>count</summaryOperation>
+        <formula>GameIncome__c + DepositTotal__c - WithdrawalTotal__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Income</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
         <trackHistory>false</trackHistory>
         <trackTrending>false</trackTrending>
-        <type>Summary</type>
+        <type>Currency</type>
     </fields>
     <fields>
         <fullName>WithdrawalTotal__c</fullName>
@@ -120,10 +122,6 @@
     <label>Player</label>
     <listViews>
         <fullName>All</fullName>
-        <columns>NAME</columns>
-        <columns>Balance__c</columns>
-        <columns>GameIncome__c</columns>
-        <columns>Games_Played__c</columns>
         <filterScope>Everything</filterScope>
         <label>All</label>
     </listViews>
@@ -133,9 +131,6 @@
         <type>Text</type>
     </nameField>
     <pluralLabel>Players</pluralLabel>
-    <searchLayouts>
-        <customTabListAdditionalFields>Balance__c</customTabListAdditionalFields>
-        <searchResultsAdditionalFields>Balance__c</searchResultsAdditionalFields>
-    </searchLayouts>
-    <sharingModel>ReadWrite</sharingModel>
+    <searchLayouts/>
+    <sharingModel>Read</sharingModel>
 </CustomObject>
