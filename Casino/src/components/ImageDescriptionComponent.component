@@ -1,0 +1,36 @@
+<apex:component>
+	<apex:componentBody>
+		<!-- Table layout -->
+		<div class="slds-col slds-size_12-of-12" style="border: 6px solid red">
+			<table style="border: 6px solid yellow">
+				<tr>
+					<td class="slds-col slds-size_4-of-12"><apex:image
+							alt="slots.jpg"
+							url="{!URLFOR($Resource.casinoIconTest, 'Sample-Casino-Images/slots.jpg')}" /></td>
+					<td class="slds-col slds-size_4-of-12"
+						style="border: 6px solid orange"><div
+							class="slds-align_absolute-center" style="font-size: 40px">Slots</div></td>
+					<td><div style="font: 20px Georgia, serif">Come try
+							your luck with our new virtual slot machine</div></td>
+				</tr>
+			</table>
+		</div>
+		<div class="slds-col slds-size_12-of-12" style="border: 6px solid red">
+			<table style="border: 6px solid yellow">
+				<tr>
+					<td class="slds-col slds-size_4-of-12"><apex:image
+							alt="blackjack.jpg"
+							url="{!URLFOR($Resource.casinoIconTest, 'Sample-Casino-Images/blackjack.jpg')}" /></td>
+					<td class="slds-col slds-size_4-of-12"
+						style="border: 6px solid orange"><div
+							class="slds-align_absolute-center" style="font-size: 40px">Blackjack</div></td>
+					<td><div class="slds-align_absolute-center"
+							style="font-size: 20px">Can you beat our virtual dealer?
+							Use your skills to beat the dealer and get more chips to add to
+							your account</div></td>
+				</tr>
+			</table>
+		</div>
+
+	</apex:componentBody>
+</apex:component>
