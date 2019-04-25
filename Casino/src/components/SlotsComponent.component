@@ -1,0 +1,268 @@
+<apex:component >
+    <apex:includeScript value="{!$Resource.Phaser}"/>
+    <c:DatabaseSync />
+    <script>
+
+        
+        //Slot object stores symbol and spins to win
+        function Slot() {
+        this.int = 0;
+        this.symbol = pictures[this.int];
+        
+        this.spin = function() {
+            this.int = Math.floor(Math.random() * pictures.length);
+            this.symbol = pictures[this.int];
+        };
+    }
+    
+    //Creates slot objects, spins them
+    function SlotMachine() {
+        this.slotA = new Slot();
+        this.slotB = new Slot();
+        this.slotC = new Slot();
+        
+        this.spinAll = function() {
+            this.slotA.spin();
+            this.slotB.spin();
+            this.slotC.spin();
+        };
+    }
+    
+    //Player class to hold a hand and to keep track of money
+    function Player(playerName, moneyAmount) {
+        var bet = 10;
+        var bank = moneyAmount; //DATABASE RELEVANT INFORMATION
+        var name = playerName; //DATABASE  RELEVANT INFORAMTION
+        
+        //Adds to player bet
+        this.betAdd = function(amount) {
+            if (bank >= amount) {
+                bet += amount;
+            } else {
+                alert("You don't have the funds to bet that much.");
+            }
+        };
+        this.subtractBet = function(amount) {
+            if (bet >= amount) {
+                bet -= amount;
+            } else if (bet > 0 && bet < amount) {
+                bet = 0;
+            } else {
+                alert("Your bet is already 0, it can't go lower!");
+            }
+        };
+        this.getBet = function() {
+            return bet;
+        };
+        this.setBet = function() {
+            bank = returnPlayerBalance();
+        };
+        this.getBank = function() {
+            return bank;
+        };
+        this.addBank = function(increment) {
+            bank += increment;
+        };
+        this.subtractBank = function(decrement) {
+            bank -= decrement;
+        };
+    }
+    var pictures = [
+        'seven',
+        'cherries',
+        'club',
+        'diamond',
+        'heart',
+        'joker',
+        'spade'
+    ];
+    
+    var gameWidth = 870;
+    var gameHeight = 570;
+    var game = new Phaser.Game(
+        gameWidth,
+        gameHeight,
+        Phaser.CANVAS,
+        "phaser-example",
+        {
+            preload: preload,
+            create: create,
+            update: update
+            //render: render
+        }
+    );
+    
+    var player;
+    
+    function preload() {
+        game.load.image('cherries', '{!URLFOR($Resource.Slots_Res,'cherries.png')}');
+        game.load.image('club', '{!URLFOR($Resource.Slots_Res,'club.png')}');
+        game.load.image('diamond', '{!URLFOR($Resource.Slots_Res,'diamond.png')}');
+        game.load.image('heart', '{!URLFOR($Resource.Slots_Res,'heart.png')}');
+        game.load.image('joker', '{!URLFOR($Resource.Slots_Res,'joker.png')}');
+        game.load.image('seven', '{!URLFOR($Resource.Slots_Res,'seven.png')}');
+        game.load.image('spade', '{!URLFOR($Resource.Slots_Res,'spade.png')}');
+        game.load.image('spinbutton', '{!URLFOR($Resource.Slots_Res,'spinbutton.png')}');
+        game.load.image('plusbetbutton', '{!URLFOR($Resource.Slots_Res,'plusbetbutton.png')}');
+        game.load.image('minusbetbutton', '{!URLFOR($Resource.Slots_Res,'minusbetbutton.png')}');
+    }
+    
+    function create() {
+        slotM = new SlotMachine();
+        isSpinning = false;
+        humanPlayer = new Player("Ace", returnPlayerBalance());
+        
+        //Color Scheme: Dark Purple: #540D6E, Light Purple: #AA4BC6, Yellow: #FFD23F
+        game.stage.backgroundColor = "#AA4BC6";
+        
+        //Creating game graphics
+        var halfPage = gameWidth / 2;
+        var spriteWidth = 80;
+        var distanceBetweenSlots = 250;
+        slot1Sprite = game.add.sprite(halfPage - spriteWidth - distanceBetweenSlots, gameHeight / 3.6, 'seven');
+        slot2Sprite = game.add.sprite(halfPage - spriteWidth, gameHeight / 3.6, 'seven');
+        slot3Sprite = game.add.sprite(halfPage - spriteWidth + distanceBetweenSlots, gameHeight / 3.6, 'seven');
+        
+        //Creating game buttons
+        spinBtn = game.add.button(gameWidth / 2 - 97, gameHeight / 1.5, "spinbutton");
+        
+        decreaseBetBtn = game.add.button(
+            gameWidth / 8,
+            gameHeight / 1.5,
+            "minusbetbutton"
+        );
+        increaseBetBtn = game.add.button(
+            gameWidth / 4.5,
+            gameHeight / 1.5,
+            "plusbetbutton"
+        );
+        
+        //Initialize input actions for buttons
+        spinBtn.onInputUp.add(() => {
+            isSpinning = true;
+            spinBtn.visible = false;
+        }, this);
+            increaseBetBtn.onInputUp.add(() => {
+            humanPlayer.betAdd(10);
+        }, this);
+            decreaseBetBtn.onInputUp.add(() => {
+            humanPlayer.subtractBet(10);
+        }, this);
+            
+            //Setup text styling and text elements
+        var style = {
+            font: "50px Calibri",
+            align: "center",
+            fill: "white"
+        };
+        betText = game.add.text(
+            gameWidth / 7.7,
+            gameHeight / 1.3,
+            "BET " + humanPlayer.getBet(),
+            style
+        );
+        bankText = game.add.text(
+            gameWidth / 1.5,
+            gameHeight / 1.3,
+            "BANK " + humanPlayer.getBank(),
+            style
+        );
+        winText = game.add.text(
+            gameWidth / 2 - 103,
+            gameHeight / 8,
+            "",
+            style
+        );
+        differenceText = game.add.text(
+            gameWidth / 1.36,
+            gameHeight / 1.5,
+            "",
+            style
+        );
+    }
+    
+    //Game loop update
+    function update() {
+        if (!isSpinning) {
+            //Making sure player has sufficient funds to bet amount
+            if(humanPlayer.getBet() > humanPlayer.getBank()){
+                humanPlayer.setBet(0);
+            }
+            betText.setText("BET " + humanPlayer.getBet());
+        }
+        if (isSpinning) {
+            isSpinning = false;	
+            winText.setText("SPINNING");
+            spinBtn.visible = false;
+            slotM.spinAll(); //Get new rng values for the slots
+            spinAnimation(); //Animate the slots
+        }
+    }
+    
+    //Checks win conditions and sets prizes
+    function checkWin() {
+        var bet = humanPlayer.getBet();
+        var jackpot = bet * 10;
+        var minipot = bet * 1;
+        
+        if (
+            slotM.slotA.int == slotM.slotB.int &&
+            slotM.slotA.int == slotM.slotC.int &&
+            slotM.slotB.int == slotM.slotC.int
+        ) {            
+            winText.setText("JACKPOT");
+            differenceText.setText("+"+ jackpot);
+            humanPlayer.addBank(jackpot);
+            alert("BIG WIN! You won " + jackpot + " credits!");
+            insertResult(bet, bet + jackpot);
+        } else if (
+            slotM.slotA.int == slotM.slotB.int ||
+            slotM.slotA.int == slotM.slotC.int ||
+            slotM.slotB.int == slotM.slotC.int
+        ) {
+            winText.setText("YOU WON");
+            differenceText.setText("+"+ minipot);
+            humanPlayer.addBank(minipot);
+            insertResult(bet, bet + minipot);
+        } else {
+            winText.setText("YOU LOST");
+            differenceText.setText("-"+ bet);
+            humanPlayer.subtractBank(bet);
+            insertResult(bet, 0);
+        }
+        bankText.setText("BANK " + humanPlayer.getBank());
+    }
+    
+    //Changes slot images while spinning
+    function spinAnimation() {
+        var i1 = 0;
+        var i2 = 0;
+        var i3 = 0;
+        var animation = setInterval(frame, 50); //50ms per frame
+        function frame(){
+            
+            if(i1 >= 10) {
+                slot1Sprite.loadTexture(slotM.slotA.symbol);
+            } else {
+                i1++;
+                slot1Sprite.loadTexture(pictures[i1 % 7]);
+            }
+            if(i2 >= 20) {
+                slot2Sprite.loadTexture(slotM.slotB.symbol);
+            } else {
+                i2++;
+                slot2Sprite.loadTexture(pictures[(i2 + 1)% 7]);
+            } 
+            if(i3 >= 30) {
+                slot3Sprite.loadTexture(slotM.slotC.symbol);
+                spinBtn.visible = true;
+                checkWin();
+                clearInterval(animation);
+            } else {
+                i3++;
+                slot3Sprite.loadTexture(pictures[(i3 + 2)% 7]);
+            }
+        }
+    }
+    </script>
+</apex:component>
