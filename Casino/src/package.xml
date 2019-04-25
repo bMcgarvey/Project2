@@ -2,41 +2,31 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>*</members>
-        <name>CustomObject</name>
-    </types>
-    <types>
-        <members>VisualBlackjack</members>
-        <members>SportingNewsRSS</members>
-        <members>TransactionCreate</members>
-        <members>GamblingNewsRSS</members>
-        <name>ApexPage</name>
-    </types>
-    <types>
-        <members>BlackJackComponent</members>
-        <name>ApexComponent</name>
-    </types>
-    <types>
-        <members>TransactionCreateController</members>
         <name>ApexClass</name>
     </types>
     <types>
-        <members>Game_Res</members>
-        <members>Phaser</members>
+        <members>*</members>
+        <name>ApexComponent</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexTestSuite</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>AuraDefinitionBundle</name>
+    </types>
+    <types>
+        <members>*</members>
         <name>StaticResource</name>
-    </types>
-    <types>
-        <members>Public</members>
-        <members>Public/GkJREfumuTNcNZZMPtnTAosqfbXkWc</members>
-        <members>Public/HwJFJAOEeCrHgmNSlvISUDeeMmeVfk</members>
-        <name>Dashboard</name>
-    </types>
-    <types>
-        <members>unfiled$public/Games_zCV</members>
-        <members>unfiled$public/Players_23Z</members>
-        <members>unfiled$public/Player_with_results_UZa</members>
-        <members>unfiled$public</members>
-        <members>unfiled$public/Players_with_results_and_games_DH7</members>
-        <name>Report</name>
     </types>
     <version>38.0</version>
 </Package>

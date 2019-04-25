@@ -2,7 +2,7 @@
 <DashboardFolder xmlns="http://soap.sforce.com/2006/04/metadata">
     <folderShares>
         <accessLevel>Manage</accessLevel>
-        <sharedTo>backupcasino@gamblers.com</sharedTo>
+        <sharedTo>asafswan@project2.apex</sharedTo>
         <sharedToType>User</sharedToType>
     </folderShares>
     <name>Public</name>
