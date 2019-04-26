@@ -5,26 +5,6 @@
         <name>CustomObject</name>
     </types>
     <types>
-        <members>VisualBlackjack</members>
-        <members>SportingNewsRSS</members>
-        <members>TransactionCreate</members>
-        <members>GamblingNewsRSS</members>
-        <name>ApexPage</name>
-    </types>
-    <types>
-        <members>BlackJackComponent</members>
-        <name>ApexComponent</name>
-    </types>
-    <types>
-        <members>TransactionCreateController</members>
-        <name>ApexClass</name>
-    </types>
-    <types>
-        <members>Game_Res</members>
-        <members>Phaser</members>
-        <name>StaticResource</name>
-    </types>
-    <types>
         <members>Public</members>
         <members>Public/GkJREfumuTNcNZZMPtnTAosqfbXkWc</members>
         <members>Public/HwJFJAOEeCrHgmNSlvISUDeeMmeVfk</members>
@@ -37,6 +17,26 @@
         <members>unfiled$public</members>
         <members>unfiled$public/Players_with_results_and_games_DH7</members>
         <name>Report</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexComponent</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>StaticResource</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexTrigger</name>
     </types>
     <version>38.0</version>
 </Package>

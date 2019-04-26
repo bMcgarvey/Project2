@@ -1,0 +1,47 @@
+<apex:component >
+    <script src="../../soap/ajax/45.0/connection.js" type="text/javascript"/>
+    <script>
+        var sessionId = sforce.connection.sessionId='{!GETSESSIONID()}';
+        var currentGame = sforce.connection.query("SELECT Id FROM Game__c WHERE Name = '" + gameName + "' LIMIT 1")['records']['Id'];
+        var currentPlayer = sforce.connection.query("SELECT Id FROM Player__c WHERE OwnerId = '{!$User.Id}' LIMIT 1")['records']['Id'];
+    
+        function insertResult(betAmount, winAmount){
+            var result = new sforce.SObject('Result__c');
+            result.Game__c = currentGame;
+            result.Player__c = currentPlayer;
+            result.Buy_In__c = betAmount;
+            result.Payout__c = winAmount;
+            var returnVal = sforce.connection.create([result]);
+            if(returnVal[0].getBoolean('success')) {
+                console.log('New result is created with id' + returnVal[0].id);
+            }else{
+                console.log('failed to create new result' + returnVal[0]);
+            }
+        }
+    
+        function returnPlayerBalance(){
+            try{
+                var balance = sforce.connection.query("SELECT Balance__c FROM player__c WHERE OwnerId = '{!$User.Id}' LIMIT 1")['records']['Balance__c'];
+                console.log(balance);
+                return balance;
+            }catch(err){
+                console.log('exception occured: ' + err.message);
+            }
+        }
+    
+        function setPlayerBalance(newBalance){
+            try{
+                var balance = sforce.connection.query("SELECT Balance__c FROM player__c WHERE OwnerId = '{!$User.Id}' LIMIT 1")['records']['Balance__c'];
+                balance['records'] = newBalance;
+                var returnVal = sforce.connection.update([balance]);
+                if(returnVal[0].getBoolean('success')) {
+                    console.log('New result is created with id' + returnVal[0].id);
+                }else{
+                    console.log('failed to create new result' + returnVal[0]);
+                }
+            }catch(err){
+                console.log('exception occured: ' + err.message);
+            }
+        }
+    </script>
+</apex:component>

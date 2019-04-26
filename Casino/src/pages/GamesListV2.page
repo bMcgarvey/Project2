@@ -1,0 +1,25 @@
+<apex:page standardController="Game__c" showHeader="false" recordSetVar="Games" >
+    <apex:slds />
+    <apex:pageBlock >
+        <!-- Table layout -->
+        <div class="slds-col slds-size_12-of-12" style="background: #ffffff">
+            <table style="border: 6px">
+                <apex:repeat value="{!Games}" var="game">
+                    <tr style="border: 6px solid light-blue">
+                    <td class="slds-col slds-size_4-of-12">
+                        <figure class="slds-image slds-image--card">
+                            <a href="https://topscasino-developer-edition.na91.force.com/s/{!game.Name}" class="slds-image__crop slds-image__crop--16-by-9">
+                                <img alt="slots.jpg" src='{!URLFOR($Resource.casinoIconTest, "Sample-Casino-Images/"+game.Name+".jpg")}' />
+                            </a>
+                        </figure>
+                    </td>
+                    <td class="slds-col slds-size_4-of-12"
+                        style="border: 6px solid light-blue"><div
+                            class="slds-align_absolute-center" style="font-size: 40px">{!game.Name}</div></td>
+                    <td><div style="font: 20px Georgia, serif">{!game.Description__c}</div></td>
+                </tr>
+                </apex:repeat>
+            </table>
+        </div>
+    </apex:pageBlock>
+</apex:page>

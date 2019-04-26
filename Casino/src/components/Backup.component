@@ -1,0 +1,352 @@
+<apex:component >
+    <apex:includeScript value="{!$Resource.Phaser}"/>
+    <c:DatabaseSync />
+	<script>  
+    	    
+//setting up card class 
+function Card(suitValue, faceValue){
+    var cardAssetPath = suitValue + faceValue;//some asset path ending with aggregate suit face .png
+    var cardFaceValue; 
+    if (faceValue == 14){
+        cardFaceValue = 11;
+    }else if(faceValue > 10 && faceValue < 14){
+        cardFaceValue = 10;
+    }else{
+        cardFaceValue = faceValue; 
+    }
+    var cardSuitValue = suitValue;
+    //returns card numeric value 
+    this.getFaceValue = function(){
+        if(cardFaceValue > 11 || cardFaceValue < 1){
+            console.log('something went wrong card value out of range');
+        }else{
+            return cardFaceValue;
+        }
+    }
+    this.getPath = function(){
+        return cardAssetPath;
+    }    
+    //going to need a set method
+}
+
+// hand class can be used to told cards and get the aggregate sum
+function Hand(comp){
+    var cardsList = [];
+    var cardsSpriteList = [];
+    //adds a card to the list of cards currently in the hand
+    this.addCard = function(cardToAdd){
+        if(cardToAdd instanceof Card){
+            cardsList.push(cardToAdd);
+        }else{
+            console.log('something went wrong attempted to add a non card to hand');
+        }
+        if(comp && cardsList.length == 2){
+        	cardsSpriteList.push(game.add.sprite(160 + cardsList.length * 40, 42, 'cardback'));
+        }else if (comp){
+            cardsSpriteList.push(game.add.sprite(150 + cardsList.length * 60, 100, cardToAdd.getPath()));
+        }else{
+            cardsSpriteList.push(game.add.sprite(150 + cardsList.length * 60, window.innerHeight - 350, cardToAdd.getPath()));
+        } 
+        cardsSpriteList[cardsSpriteList.length - 1].scale.setTo(.25, .25);
+    }
+    // returns the sum of the cards in the hand 
+    this.getSum = function(){
+        var sum = 0;
+        cardsList.forEach(x => sum += x.getFaceValue());
+        return sum;
+    }
+    
+    this.flipCard = function(){
+        cardsSpriteList[1].loadTexture(cardsList[1].getPath());
+        cardsSpriteList[1].y = 100;
+        cardsSpriteList[1].x = 150 + 120;	
+    }
+    
+    this.destroySprites = function(){
+        for(let i = 0; i < cardsSpriteList.length; i++){
+            cardsSpriteList[i].visible = false;
+            cardsSpriteList[i].destroy(true);
+        }
+    }
+}
+
+//player class to hold a hand and to keep track of money 
+function Player(playerName, moneyAmount, playerHand){
+    var bet = 0;
+    var myTurn = true;
+    var bank = moneyAmount; //DATABASE RELEVANT INFORMATION
+    var name = playerName; //DATABASE  RELEVANT INFORAMTION
+    var myHand = playerHand; 
+    
+    // stand
+    this.stay = function(){
+        myTurn = false;
+    }
+        //adds to player bet
+    this.betAdd = function(amount){
+        if(bank >= amount){
+            bank -= amount;
+            bet += amount;
+            // will need rendering
+        }else{
+            alert('You don\'t have the funds to bet that much.'); 
+        }
+    }
+    // double
+    this.double = function(cardToAdd){
+        this.betAdd(bet);
+        myHand.addCard(cardToAdd);
+        this.stay();
+        myTurn = false;
+    }
+    this.getHand = function(){
+        return myHand;
+    }
+    this.getBet = function(){
+        return bet;
+    }
+    this.getBank = function(){
+    	return bank;
+    }
+    this.setBank = function(){
+    	bank = returnPlayerBalance();
+    }
+    this.getTurn = function(){
+        return myTurn;
+    }
+    this.zeroBet = function(){
+    	bet = 0;
+    }
+    this.resetHand = function(){
+        myTurn = true;
+        myHand = new Hand(false);
+    }
+    
+}
+
+//deck class used to create shuffle and deal cards 
+function Deck(){
+    var value = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+    var suit = ['c', 'h', 'd', 's'];
+    var cardList = [];
+    
+    this.makeDeck = function(){
+        suit.forEach(function(x){
+            value.forEach(function(y){
+                var nextCard = new Card(x, y);
+                cardList.push(nextCard);   
+            });
+        });
+    }
+
+    this.getDeck = function(){
+        return cardList;
+    }
+    
+    this.shuffleDeck = function(){
+        for(let i = 0; i < cardList.length; i++){
+            let rand = Math.floor(Math.random() * 52);
+            let temp = cardList[i];
+            cardList[i] = cardList[rand]; 
+            cardList[rand] = temp;
+        }
+    }
+    
+    this.getNext = function(){
+        if(cardList.length > 0){
+            return cardList.pop();
+        } else{
+            this.makeDeck();
+            this.shuffleDeck();
+            this.getNext();
+        } 
+    }
+    
+    this.clearDeck = function(){
+        cardlist = [];
+    }
+}
+
+
+//defining phaser game obj 
+var game = new Phaser.Game(870, 570, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
+
+//pre load resources for game 
+function preload(){
+	game.load.image('blue_chip', '{!URLFOR($Resource.Game_Res,'card_game_res/poker_chip_blue.png')}');
+    game.load.image('red_chip', '{!URLFOR($Resource.Game_Res,'card_game_res/poker_chip_red.png')}');
+    game.load.image('gold_chip', '{!URLFOR($Resource.Game_Res,'card_game_res/poker_chip_gold.png')}');
+    game.load.image('black_chip', '{!URLFOR($Resource.Game_Res,'card_game_res/poker_chip_black.png')}');
+    game.load.image('hit', '{!URLFOR($Resource.Game_Res,'card_game_res/hit.png')}');
+    game.load.image('stay', '{!URLFOR($Resource.Game_Res,'card_game_res/stay.png')}');
+    game.load.image('double', '{!URLFOR($Resource.Game_Res,'card_game_res/double.png')}');
+    game.load.image('deal', '{!URLFOR($Resource.Game_Res,'card_game_res/suits.png')}');
+    game.load.image('textbox', '{!URLFOR($Resource.Game_Res,'card_game_res/textbox.png')}');
+    gameDeck = new Deck();
+    gameDeck.makeDeck();
+    gameDeck.getDeck().forEach((x)=>{
+        game.load.image(x.getPath(), '{!URLFOR($Resource.Game_Res,'card_game_res/+x.getPath()+.png')}'.replace('+x.getPath()+', x.getPath()));
+    });
+    game.load.image('cardback', '{!URLFOR($Resource.Game_Res,'card_game_res/cardback.png')}');
+    
+}
+
+//create game and create related game resources 
+function create() {
+    
+    // creating objects from js classes for data
+    playerHand = new Hand(false);
+    computerHand = new Hand(true);
+    humanPlayer = new Player('Dos', returnPlayerBalance(), playerHand);
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    game.stage.backgroundColor = '#477148';
+
+    var graphics = game.add.graphics(100, 100);
+        
+    // creating game buttons specifying callbacks
+    var btns = {
+        turnBtns: [
+            game.add.button(window.innerWidth / 2 + 100, window.innerHeight - 130, 'hit', ()=>{
+                humanPlayer.getHand().addCard(gameDeck.getNext()); 
+                /*game.physics.arcade.moveToXY(testingSprite, 200, 500, 0, 1000);*/}, this), 
+            game.add.button(window.innerWidth / 2 + 175, window.innerHeight - 130, 'stay', ()=>{
+        		humanPlayer.stay(); 
+        		computerHand.flipCard();}, this),
+            game.add.button(window.innerWidth / 2 + 275, window.innerHeight - 130, 'double', ()=>{
+        		humanPlayer.double(gameDeck.getNext()); 
+        		computerHand.flipCard();}, this),
+        ],
+            betBtns: [
+            game.add.button(50, window.innerHeight - 130, 'gold_chip', () => {humanPlayer.betAdd(25);}, this),
+            game.add.button(150, window.innerHeight - 130, 'red_chip', () => {humanPlayer.betAdd(50);}, this),
+            game.add.button(250, window.innerHeight - 130, 'blue_chip', () => {humanPlayer.betAdd(100);}, this),
+            game.add.button(350, window.innerHeight - 130, 'black_chip', () => {humanPlayer.betAdd(200);}, this),
+            game.add.button((window.innerWidth / 2) - 225, (window.innerHeight / 2) -100, 'deal', ()=>{
+        		bettingPhase = false; 
+        		pHandValueSprite.visible = true; 
+        		pHandText.visible = true; 
+        		texts.betText.forEach((x)=>{x.visible = false});
+        		btns.betBtns.forEach((x)=>{x.visible = false});
+        		texts.turnText.forEach((x)=>{x.visible = true});
+        		btns.turnBtns.forEach((x)=>{x.visible = true});}, this)
+        ]
+    }
+	
+    btns.turnBtns.forEach((x)=>{x.scale.setTo(.15, .15)});
+    btns.betBtns.forEach((x)=>{x.scale.setTo(.15, .15)});
+
+    pBetSprite = game.add.sprite(window.innerWidth / 2 + 85, window.innerHeight - 275, 'textbox');
+    pBetSprite.scale.setTo(.17, .15);
+    pHandValueSprite = game.add.sprite(window.innerWidth / 2 + 65, window.innerHeight - 345, 'textbox');
+    pHandValueSprite.scale.setTo(.19, .15);
+    pBankValueSprite = game.add.sprite(0, window.innerHeight - 275, 'textbox');
+    pBankValueSprite.scale.setTo(.27, .15);
+    
+     
+    
+    //setup text styling and text elements 
+    var style = { font: "32px Arial",  wordWrap: true, wordWrapWidth: 300, align: "center", fill: "white"};
+    texts = {
+        turnText : [
+            game.add.text(Math.floor(btns.turnBtns[0].x + btns.turnBtns[0].width / 4), Math.floor(btns.turnBtns[0].y + btns.turnBtns[0].height / 2.5), "Hit", style),
+            game.add.text(Math.floor(btns.turnBtns[1].x + btns.turnBtns[1].width / 8), Math.floor(btns.turnBtns[1].y + btns.turnBtns[1].height / 2.5), "Stay", style),
+            game.add.text(Math.floor(btns.turnBtns[2].x - 10), Math.floor(btns.turnBtns[2].y + btns.turnBtns[2].height / 2.5), "Double", style),
+        ],
+        betText : [
+            game.add.text(Math.floor(btns.betBtns[0].x), Math.floor(btns.betBtns[0].y + btns.betBtns[0].height / 3), "$25", style),
+            game.add.text(Math.floor(btns.betBtns[1].x), Math.floor(btns.betBtns[1].y + btns.betBtns[1].height / 3), "$50", style),
+            game.add.text(Math.floor(btns.betBtns[2].x), Math.floor(btns.betBtns[2].y + btns.betBtns[2].height / 3), "$100", style),
+            game.add.text(Math.floor(btns.betBtns[3].x), Math.floor(btns.betBtns[3].y + btns.betBtns[3].height / 3), "$200", style),
+            game.add.text(Math.floor(btns.betBtns[4].x), Math.floor(btns.betBtns[4].y + btns.betBtns[4].height / 3.7), "Deal!", style)
+        ]
+    }
+
+    pBetText = game.add.text(Math.floor(pBetSprite.x + pBetSprite.width / 6), Math.floor(pBetSprite.y + pBetSprite.height / 1.9), 'Your Bet: ' + humanPlayer.getBet() , style);
+    pHandText = game.add.text(Math.floor(pHandValueSprite.x + pHandValueSprite.width / 6), Math.floor(pHandValueSprite.y + pHandValueSprite.height / 1.9), "", style);
+    pBankText = game.add.text(Math.floor(pBankValueSprite.x + pBankValueSprite.width / 6), Math.floor(pBankValueSprite.y + pBankValueSprite.height / 1.9), 'Your Bank: ' + humanPlayer.getBet(), style);
+    
+    //function wrapping game reset logic for reuse 
+    resetGame = function(){
+        humanPlayer.setBank();
+        humanPlayer.zeroBet();
+        pBetText.setText('Your Bet: ' + humanPlayer.getBet());
+        pBankText.setText('Your Bank: ' + humanPlayer.getBank());
+        pHandText.visible = false;
+        pHandValueSprite.visible = false;
+        texts.betText.forEach((x)=>{x.visible = true});
+        btns.betBtns.forEach((x)=>{x.visible = true});
+        texts.turnText.forEach((x)=>{x.visible = false});
+        btns.turnBtns.forEach((x)=>{x.visible = false});
+        gameDeck = new Deck();
+    	gameDeck.makeDeck();
+    	gameDeck.shuffleDeck();
+        bettingPhase = true;
+        humanPlayer.getHand().destroySprites();
+        humanPlayer.resetHand();
+        computerHand.destroySprites();
+        computerHand = new Hand(true);
+        pHandText.setText('');
+        computerCardCount = 0;
+        playerCardCount = 0;
+        counter = 0;
+        outcomeTracker = 0;
+    }
+    resetGame();                               
+    
+    lossLogic = function(){
+        pHandText.setText('Hand Value: ' + humanPlayer.getHand().getSum());
+    	insertResult(humanPlayer.getBet(), 0)
+        computerHand.flipCard();
+        game.time.events.add(Phaser.Timer.SECOND, ()=>{alert('Sorry you lose' + humanPlayer.getBet()); resetGame();}, this)
+        outcomeTracker += 1;
+ 	}
+            
+    window.graphics = graphics;
+    
+}
+
+//game loop update enable disable buttons and sprites
+function update(){
+    //preebetting actions
+    if(bettingPhase){
+        pBetText.setText('Your Bet: ' + humanPlayer.getBet());
+        pBankText.setText('Your Bank: ' + humanPlayer.getBank());                           
+    }else if(!bettingPhase && humanPlayer.getTurn()){ // player phase gameplay
+        if (counter == 0){
+            humanPlayer.getHand().addCard(gameDeck.getNext());
+            computerHand.addCard(gameDeck.getNext());
+            humanPlayer.getHand().addCard(gameDeck.getNext());
+            computerHand.addCard(gameDeck.getNext());
+            counter = 1;
+        }
+        
+        if (humanPlayer.getHand().getSum() > 21 && outcomeTracker == 0){ // bust logic
+            lossLogic();
+        }
+        pHandText.setText('Hand Value: ' + humanPlayer.getHand().getSum());
+    }else{
+        computerHand.flipCard();
+        if (computerHand.getSum() > 21 && outcomeTracker == 0){;
+            insertResult(humanPlayer.getBet(), humanPlayer.getBet()*2),
+            game.time.events.add(Phaser.Timer.SECOND, ()=>{alert('Congrats you won '  + humanPlayer.getBet()),                       
+            resetGame();}, this)
+            outcomeTracker += 1;
+        }else if (computerHand.getSum() < 17){
+			computerHand.flipCard();    
+            computerHand.addCard(gameDeck.getNext());                      
+            game.time.events.add(Phaser.Timer.SECOND, ()=>{computerHand.getSum();}, this);
+        }else if(computerHand.getSum() >= humanPlayer.getHand().getSum() && computerHand.getSum() < 22 && outcomeTracker == 0){
+            lossLogic();
+        }else if (computerHand.getSum() < humanPlayer.getHand().getSum() && computerHand.getSum() < 22 && outcomeTracker == 0){
+            computerHand.flipCard();
+            game.time.events.add(Phaser.Timer.SECOND, ()=>{if(confirm('Congrats you won '  + humanPlayer.getBet()*2)){
+            insertResult(humanPlayer.getBet(), humanPlayer.getBet())                     
+            resetGame();}}, this)
+                                
+            outcomeTracker += 1;
+        }
+    }
+}
+
+    </script>
+</apex:component>
