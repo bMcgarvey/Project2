@@ -124,6 +124,11 @@
         <columns>Balance__c</columns>
         <columns>GameIncome__c</columns>
         <columns>Games_Played__c</columns>
+        <filterScope>Mine</filterScope>
+        <label>All</label>
+    </listViews>
+    <listViews>
+        <fullName>All1</fullName>
         <filterScope>Everything</filterScope>
         <label>All</label>
     </listViews>

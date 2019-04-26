@@ -25,7 +25,7 @@
                 <header>Total games played</header>
                 <legendPosition>Right</legendPosition>
                 <maxValuesDisplayed>6</maxValuesDisplayed>
-                <report>unfiled$public/Games_zCV</report>
+                <report>Community_Reports/Games_zCV</report>
                 <showPercentage>false</showPercentage>
                 <showTotal>true</showTotal>
                 <showValues>true</showValues>
@@ -52,7 +52,7 @@
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#FFB75D</indicatorMiddleColor>
-                <report>unfiled$public/Games_zCV</report>
+                <report>Community_Reports/Games_zCV</report>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
             <rowSpan>4</rowSpan>
@@ -77,7 +77,7 @@
                 <header>Your games played</header>
                 <legendPosition>Right</legendPosition>
                 <maxValuesDisplayed>6</maxValuesDisplayed>
-                <report>unfiled$public/Player_with_results_UZa</report>
+                <report>Community_Reports/Player_with_results_UZa</report>
                 <showPercentage>false</showPercentage>
                 <showTotal>true</showTotal>
                 <showValues>true</showValues>
@@ -108,7 +108,7 @@
                 <header>Top 10 Bankrolls</header>
                 <legendPosition>Bottom</legendPosition>
                 <maxValuesDisplayed>10</maxValuesDisplayed>
-                <report>unfiled$public/Players_23Z</report>
+                <report>Community_Reports/Players_23Z</report>
                 <showPercentage>false</showPercentage>
                 <showPicturesOnCharts>false</showPicturesOnCharts>
                 <showValues>true</showValues>
@@ -138,7 +138,7 @@
                 <groupingColumn>CUST_NAME</groupingColumn>
                 <header>Biggest winners</header>
                 <legendPosition>Bottom</legendPosition>
-                <report>unfiled$public/Players_23Z</report>
+                <report>Community_Reports/Players_23Z</report>
                 <showPercentage>false</showPercentage>
                 <showPicturesOnCharts>false</showPicturesOnCharts>
                 <showValues>true</showValues>
@@ -168,7 +168,7 @@
                 <groupingColumn>CUST_NAME</groupingColumn>
                 <header>Biggest losers</header>
                 <legendPosition>Bottom</legendPosition>
-                <report>unfiled$public/Players_23Z</report>
+                <report>Community_Reports/Players_23Z</report>
                 <showPercentage>false</showPercentage>
                 <showPicturesOnCharts>false</showPicturesOnCharts>
                 <showValues>true</showValues>
@@ -183,7 +183,7 @@
     </dashboardGridLayout>
     <dashboardType>SpecifiedUser</dashboardType>
     <isGridLayout>true</isGridLayout>
-    <runningUser>backupcasino@gamblers.com</runningUser>
+    <runningUser>daultonoryan@topscasino.newvegas</runningUser>
     <textColor>#000000</textColor>
     <title>Casino</title>
     <titleColor>#000000</titleColor>

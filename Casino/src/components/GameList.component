@@ -1,0 +1,41 @@
+<apex:component >
+    <apex:slds />
+	<apex:componentBody >
+		<!-- Table layout -->
+		<div class="slds-col slds-size_12-of-12" style="background: #ffffff">>
+			<table style="border: 6px">
+				<tr style="border: 6px solid light-blue">
+					<td class="slds-col slds-size_4-of-12">
+                        <figure class="slds-image slds-image--card">
+  							<a href="javascript:void(0);" class="slds-image__crop slds-image__crop--16-by-9">
+    							<img alt="slots.jpg" src="{!URLFOR($Resource.casinoIconTest, 'Sample-Casino-Images/slots.jpg')}" />
+  							</a>
+                        </figure>
+                    </td>
+					<td class="slds-col slds-size_4-of-12"
+						style="border: 6px solid light-blue"><div
+							class="slds-align_absolute-center" style="font-size: 40px">Slots</div></td>
+					<td><div style="font: 20px Georgia, serif">Come try
+							your luck with our new virtual slot machine</div></td>
+				</tr>
+                <tr style="border: 6px solid light-blue">
+					<td class="slds-col slds-size_4-of-12">
+                        <figure class="slds-image slds-image--card">
+  							<a href="javascript:void(0);" class="slds-image__crop slds-image__crop--16-by-9">
+    							<img alt="slots.jpg" src="{!URLFOR($Resource.casinoIconTest, 'Sample-Casino-Images/blackjack.jpg')}" />
+  							</a>
+                        </figure>
+                    </td>
+					<td class="slds-col slds-size_4-of-12"
+						style="border: 6px solid light-blue"><div
+							class="slds-align_absolute-center" style="font-size: 40px">Blackjack</div></td>
+					<td><div class="slds-align_absolute-center"
+							style="font-size: 20px">Can you beat our virtual dealer?
+							Use your skills to beat the dealer and get more chips to add to
+							your account</div></td>
+				</tr>
+			</table>
+		</div>
+
+	</apex:componentBody>
+</apex:component>
